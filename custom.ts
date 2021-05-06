@@ -67,7 +67,32 @@ namespace CircuitCheck {
             }
         }
         continue_breakpoint = true;//reset to allow for next breakpoint
-    }   
+    }
+
+    /**
+     * Pause the running program and connect with Circuit Check
+     */
+    //% block
+    //% weight=100
+    //% group="Breakpoint"
+    //% id.defl="description here!"
+    //% advanced=true
+    export function conditionalBreakpoint(condition: boolean, id: string) {
+        if(condition)
+        {
+            serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
+            sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
+            variable_transmitter();//Send current state of variables
+            while (continue_breakpoint) {
+                if (timer + delay < input.runningTime()) {
+                    checkMessages();
+                    // Update timer
+                    timer = input.runningTime();
+                }
+            }
+            continue_breakpoint = true;//reset to allow for next breakpoint
+        }
+    }
 
     /**
      * Prepare the microcontroller to relay variable and sensor data to Circuit Check
