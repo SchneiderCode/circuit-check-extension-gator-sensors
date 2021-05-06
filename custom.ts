@@ -36,7 +36,7 @@ namespace CircuitCheck {
      */
     //% block
     //% weight=100
-    export function run_circuit_check() {
+    export function runCircuitCheck() {
         while (true) {
             if (timer + delay < input.runningTime()) {
                 checkMessages();
