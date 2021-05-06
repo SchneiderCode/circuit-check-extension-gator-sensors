@@ -36,8 +36,24 @@ namespace CircuitCheck {
      */
     //% block
     //% weight=100
+    export function run_circuit_check() {
+        while (true) {
+            if (timer + delay < input.runningTime()) {
+                checkMessages();
+                // Update timer
+                timer = input.runningTime();
+            }
+        }
+    }
+
+    /**
+     * Pause the running program and connect with Circuit Check
+     */
+    //% block
+    //% weight=100
     //% group="Breakpoint"
     //% id.defl="description here!"
+    //% advanced=true
     export function breakpoint(id: string) {
         serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id +  "\"}}" + delim);
         sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
@@ -60,6 +76,7 @@ namespace CircuitCheck {
     //% group="Variables"
     //% weight=100
     //% handlerStatement
+    //% advanced=true
     export function prepareVariables(handler: () => void) {
         variable_transmitter = handler;
     }
@@ -71,6 +88,7 @@ namespace CircuitCheck {
     //% group="Variables"
     //% weight=90
     //% var_type.defl = Type.Integer
+    //% advanced=true
     export function transmitVariableData( name: string, variable: any, var_type : Type) {
         
         if(variable_update.name === name)
@@ -105,6 +123,7 @@ namespace CircuitCheck {
     //% group="Sensors"
     //% weight=100
     //% handlerStatement
+    //% advanced=true
     export function prepareSensors(handler: () => void) {
         sensor_transmitter = handler;
     }
@@ -133,6 +152,7 @@ namespace CircuitCheck {
     //% group="Sensors"
     //% weight=90
     //% block="display sensor data (name: $name , value: $value)"
+    //% advanced=true
     export function transmitSensorData_Basic( name: string, value: any) {
         transmitSensorData_Advanced(name, value, Type.Integer);
     }

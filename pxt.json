@@ -10,11 +10,16 @@
         "main.blocks",
         "main.ts",
         "README.md",
-        "custom.ts"
+        "custom.ts",
+        "circuit-check-add-sensor.md"
     ],
     "testFiles": [
         "test.ts"
     ],
+    "targetVersions": {
+        "target": "3.1.79",
+        "targetId": "microbit"
+    },
     "supportedTargets": [
         "microbit"
     ],
