@@ -1,4 +1,5 @@
 # Adding a sensor to Circuit Check
+In this tutorial you will learn to add an external sensor to Circuit Check
 
 ## Prepare Sensor Block
 
@@ -16,6 +17,7 @@ CircuitCheck.prepareSensors(function () {
 ``` 
 
 ## Place Sensor Block
+
 ```blocks
 CircuitCheck.prepareSensors(function () {
     CircuitCheck.transmitSensorData_Basic("Ultrasonic", sonar.ping(

@@ -29,6 +29,7 @@ namespace CircuitCheck {
     let variable_transmitter = () => {};
     let sensor_update = "start";
     let sensor_transmitter = () => {};
+    let turn_off_breakpoints = false;
 
 
     /**
@@ -55,18 +56,20 @@ namespace CircuitCheck {
     //% id.defl="description here!"
     //% advanced=true
     export function breakpoint(id: string) {
-        serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id +  "\"}}" + delim);
-        sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
-        variable_transmitter();//Send current state of variables
-        while(continue_breakpoint)
-        {
-            if (timer + delay < input.runningTime()) {
-                checkMessages();
-                // Update timer
-                timer = input.runningTime();
+        if (!turn_off_breakpoints)
+        {//Verify breakpoints haven't been turned off
+            serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
+            sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
+            variable_transmitter();//Send current state of variables
+            while (continue_breakpoint) {
+                if (timer + delay < input.runningTime()) {
+                    checkMessages();
+                    // Update timer
+                    timer = input.runningTime();
+                }
             }
+            continue_breakpoint = true;//reset to allow for next breakpoint
         }
-        continue_breakpoint = true;//reset to allow for next breakpoint
     }
 
     /**
@@ -80,17 +83,7 @@ namespace CircuitCheck {
     export function conditionalBreakpoint(condition: boolean, id: string) {
         if(condition)
         {
-            serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
-            sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
-            variable_transmitter();//Send current state of variables
-            while (continue_breakpoint) {
-                if (timer + delay < input.runningTime()) {
-                    checkMessages();
-                    // Update timer
-                    timer = input.runningTime();
-                }
-            }
-            continue_breakpoint = true;//reset to allow for next breakpoint
+            breakpoint(id);
         }
     }
 
@@ -194,11 +187,16 @@ namespace CircuitCheck {
         }
         switch(data_split[0])
         {
-            case "-2": //Handle Variable Update
+            case "-3": //Handle Variable Update
                 variable_update = {name: data_split[1], value: data_split[2], var_type: parseInt(data_split[3])};
                 variable_transmitter();
                 data_split= ["D"];//Only set once
             break;
+
+            case "-2": //Step to the next breakpoint
+                turn_off_breakpoints = !turn_off_breakpoints;
+                data_split = ["D"];//Only set once
+                break;
 
             case "-1": //Step to the next breakpoint
                 continue_breakpoint = false;
