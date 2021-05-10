@@ -30,7 +30,17 @@ namespace CircuitCheck {
     let sensor_update = "start";
     let sensor_transmitter = () => {};
     let turn_off_breakpoints = false;
+    let url = "";
 
+    /**
+     * Set the URL for viewing this project
+     */
+    //% block
+    //% share_url.defl="https://makecode.microbit.org/_unique_id"
+    //% weight=110
+    export function setShareUrl(share_url: string) {
+        url = share_url;
+    }
 
     /**
      * Pause the running program and connect with Circuit Check
@@ -38,6 +48,7 @@ namespace CircuitCheck {
     //% block
     //% weight=100
     export function runCircuitCheck() {
+        serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
         while (true) {
             if (timer + delay < input.runningTime()) {
                 checkMessages("Circuit Check Running");
@@ -56,6 +67,7 @@ namespace CircuitCheck {
     //% id.defl="description here!"
     //% advanced=true
     export function breakpoint(id: string) {
+        serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
         serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
         sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
         variable_transmitter();//Send current state of variables
