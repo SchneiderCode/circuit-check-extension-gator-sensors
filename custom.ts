@@ -40,7 +40,7 @@ namespace CircuitCheck {
     export function runCircuitCheck() {
         while (true) {
             if (timer + delay < input.runningTime()) {
-                checkMessages();
+                checkMessages("Circuit Check Running");
                 // Update timer
                 timer = input.runningTime();
             }
@@ -56,20 +56,17 @@ namespace CircuitCheck {
     //% id.defl="description here!"
     //% advanced=true
     export function breakpoint(id: string) {
-        if (!turn_off_breakpoints)
-        {//Verify breakpoints haven't been turned off
-            serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
-            sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
-            variable_transmitter();//Send current state of variables
-            while (continue_breakpoint) {
-                if (timer + delay < input.runningTime()) {
-                    checkMessages();
-                    // Update timer
-                    timer = input.runningTime();
-                }
+        serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
+        sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
+        variable_transmitter();//Send current state of variables
+        do {
+            if (timer + delay < input.runningTime()) {
+                checkMessages(id);
+                // Update timer
+                timer = input.runningTime();
             }
-            continue_breakpoint = true;//reset to allow for next breakpoint
-        }
+        } while (continue_breakpoint && !turn_off_breakpoints);
+        continue_breakpoint = true;//reset to allow for next breakpoint
     }
 
     /**
@@ -130,7 +127,7 @@ namespace CircuitCheck {
             }
         }
         //transmit current variable data
-        serial.writeLine("{\"Variable\": {  \"name\":" + name + ",\"value\":"+ variable +",\"type\":" + var_type +  "}}" + delim);
+        serial.writeLine("{\"Variable\": {  \"name\":\"" + name + "\",\"value\":"+ variable +",\"type\":" + var_type +  "}}" + delim);
         return variable;//No update has occured send the old value - Todo: This seems inefficient by adding additional writes to memory...
     }
 
@@ -175,7 +172,7 @@ namespace CircuitCheck {
         transmitSensorData_Advanced(name, value, Type.Integer);
     }
 
-    function checkMessages() {
+    function checkMessages(id: string) {
         data_raw = serial.readString()
         if (data_raw.trim() != "") {
             data_split = data_raw.split(",");
@@ -187,16 +184,26 @@ namespace CircuitCheck {
         }
         switch(data_split[0])
         {
+            case "-4":
+                serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
+                sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
+                variable_transmitter();//Send current state of variables
+                sensor_update = "send names";
+                sensor_transmitter();
+                data_split=["D"];
+            break;
+
             case "-3": //Handle Variable Update
                 variable_update = {name: data_split[1], value: data_split[2], var_type: parseInt(data_split[3])};
                 variable_transmitter();
                 data_split= ["D"];//Only set once
             break;
 
-            case "-2": //Step to the next breakpoint
+            case "-2": //Turn breakpoints on/off
                 turn_off_breakpoints = !turn_off_breakpoints;
+                continue_breakpoint = false;
                 data_split = ["D"];//Only set once
-                break;
+            break;
 
             case "-1": //Step to the next breakpoint
                 continue_breakpoint = false;
@@ -357,17 +364,21 @@ namespace CircuitCheck {
     function sendScreenshot(){
         let image = led.screenshot();
         let led_array = "[";
-        for(let y = 0; y < 5; y++)
+        for(let y = 0; y < 4; y++)
         {
             led_array += "[";
-            for(let x = 0; x < 5; x++)
+            for(let x = 0; x < 4; x++)
             {
                 led_array += image.pixel(x, y).toString() + ",";
             }
-            led_array += "],";
+            led_array += image.pixel(4, y).toString() + "],";
         }
-        led_array += "]";
-        
+        led_array += "[";
+        for (let x = 0; x < 4; x++) {
+            led_array += image.pixel(x, 4).toString() + ",";
+        }
+        led_array += image.pixel(4, 4).toString() + "]";
+        led_array += "]"; 
         serial.writeLine("{\"Reset_LEDs\":" + led_array + "}" + delim);
     }
 }
