@@ -49,7 +49,7 @@ namespace CircuitCheck {
     //% block
     //% weight=100
     export function runCircuitCheck() {
-        serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
+        //serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
         do {
             if (timer + delay < input.runningTime()) {
                 sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
