@@ -30,6 +30,7 @@ namespace CircuitCheck {
     let sensor_update = "start";
     let sensor_transmitter = () => {};
     let turn_off_breakpoints = false;
+    let hold = false;
     let url = "";
 
     /**
@@ -49,13 +50,14 @@ namespace CircuitCheck {
     //% weight=100
     export function runCircuitCheck() {
         serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
-        while (true) {
+        do {
             if (timer + delay < input.runningTime()) {
+                sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
                 checkMessages("Circuit Check Running");
                 // Update timer
                 timer = input.runningTime();
             }
-        }
+        }while (hold);
     }
 
     /**
@@ -187,7 +189,9 @@ namespace CircuitCheck {
     function checkMessages(id: string) {
         data_raw = serial.readString()
         if (data_raw.trim() != "") {
+            //Hold previous value, for hold/release we need to return to the last sensor command
             data_split = data_raw.split(",");
+            data_split[data_split.length - 1] = data_split[data_split.length - 1].substr(0, data_split[data_split.length - 1].length - 1);//remove last | from data value
             serial.writeString("{\"Message\":\" Raw data was " + data_raw + " selection was " + data_split[0] + " and Data was : ")
             for (let i = 0; i <= data_split.length - 1; i++) {
                 serial.writeString("[" + i + "] " + data_split[i] + " | ")
@@ -368,6 +372,28 @@ namespace CircuitCheck {
             case "16": //Transmit external sensor data
                 sensor_update = data_split[1];
                 sensor_transmitter();
+            break;
+
+            case "18": //gatorMicrophone.getSoundIntensity() 
+                serial.writeLine("{\"Sound\":" + gatorMicrophone.getSoundIntensity()+ "}" + delim);
+                if(hold)
+                {
+                  delay = 125;  
+                }
+                else
+                {
+                    delay = 0;
+                }
+            break;
+            //'RELEASE' : "21", 'HOLD': "22" }
+            case "21":
+                hold = false;
+                data_split= ["18"];//Only set once
+            break;
+
+            case "22":
+                hold = true;
+                data_split= ["18"];//Only set once
             break;
         }
         

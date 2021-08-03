@@ -4,7 +4,8 @@
     "dependencies": {
         "core": "*",
         "radio": "*",
-        "microphone": "*"
+        "microphone": "*",
+        "gatorMicrophone": "github:sparkfun/pxt-gator-microphone#v1.0.20"
     },
     "files": [
         "main.blocks",
@@ -17,7 +18,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "3.1.79",
+        "target": "4.0.11",
         "targetId": "microbit"
     },
     "supportedTargets": [
