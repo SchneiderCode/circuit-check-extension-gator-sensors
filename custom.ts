@@ -1,4 +1,7 @@
 
+//Todo:
+ // Handle print statement support like Arduino code
+
 enum Type {
     //% block="whole number"
     Integer = 1,
@@ -31,17 +34,8 @@ namespace CircuitCheck {
     let sensor_transmitter = () => {};
     let turn_off_breakpoints = false;
     let hold = false;
-    let url = "";
+ 
 
-    /**
-     * Set the URL for viewing this project
-     */
-    //% block
-    //% share_url.defl="https://makecode.microbit.org/_unique_id"
-    //% weight=110
-    export function setShareUrl(share_url: string) {
-        url = share_url;
-    }
 
     /**
      * Pause the running program and connect with Circuit Check
@@ -50,6 +44,7 @@ namespace CircuitCheck {
     //% weight=100
     export function runCircuitCheck() {
         //serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
+        variable_transmitter();//Send current state of variables
         do {
             if (timer + delay < input.runningTime()) {
                 sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
@@ -69,7 +64,7 @@ namespace CircuitCheck {
     //% id.defl="description here!"
     //% advanced=true
     export function breakpoint(id: string) {
-        serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
+        //serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
         serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
         sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
         variable_transmitter();//Send current state of variables
@@ -118,7 +113,7 @@ namespace CircuitCheck {
     //% weight=90
     //% var_type.defl = Type.Integer
     //% advanced=true
-    export function transmitVariableData( name: string, variable: any, var_type : Type) {
+    export function transmitVariableData(name: string, variable: any, var_type : Type) {
         
         if(variable_update.name === name)
         {//An updated value has been transmitted
@@ -200,30 +195,13 @@ namespace CircuitCheck {
         }
         switch(data_split[0])
         {
-            case "-4":
+            case "1"://Sync
                 serial.writeLine("{\"Breakpoint\": {  \"id\":\"" + id + "\"}}" + delim);
                 sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
                 variable_transmitter();//Send current state of variables
                 sensor_update = "send names";
                 sensor_transmitter();
                 data_split=["D"];
-            break;
-
-            case "-3": //Handle Variable Update
-                variable_update = {name: data_split[1], value: data_split[2], var_type: parseInt(data_split[3])};
-                variable_transmitter();
-                data_split= ["D"];//Only set once
-            break;
-
-            case "-2": //Turn breakpoints on/off
-                turn_off_breakpoints = !turn_off_breakpoints;
-                continue_breakpoint = false;
-                data_split = ["D"];//Only set once
-            break;
-
-            case "-1": //Step to the next breakpoint
-                continue_breakpoint = false;
-                data_split= ["D"];//Only set once
             break;
 
             /*case "0": //Read out Digital/Analog pin values 
@@ -249,7 +227,7 @@ namespace CircuitCheck {
             }
             break;*/
             
-            case "1": //Read value on a specific pin
+            case "3": //Read value on a specific pin
                 if(parseInt(data_split[1]) === 0)
                 {//Digital
                     let digital_val = 0;
@@ -278,46 +256,84 @@ namespace CircuitCheck {
                     serial.writeLine("{\"Pins\":{\"AP" + data_split[2] + "\":" + pins.analogReadPin(analog_pins[parseInt(data_split[2])]) + "}}" + delim);
                 }
             break;
+
+            case "4": //Set digitalWrite on a pin
+                pins.digitalWritePin(digital_pins[parseInt(data_split[1])], parseInt(data_split[2]));
+                data_split = ["D"];//Only set once
+                break;
             
-            case "2": //Set PWM on a specific pin
+            case "5": //Set PWM on a specific pin
                 pins.analogWritePin(analog_pins[parseInt(data_split[1])], parseInt(data_split[2]));
                 serial.writeString("{\"Message\":\" PWM was set on pin " + data_split[1] + "to " + data_split[2] + "\"}" + delim);
                 data_split= ["D"];//Only set once
             break;
+
+            case "11": //Hold in run()
+                hold = true;
+                data_split = ["D"];//Only set once
+                break;
+
+            case "12": //Release from run()
+                hold = false;
+                data_split = ["D"];//Only set once
+                break;
+
+            case "13": //Step to the next breakpoint
+                continue_breakpoint = false;
+                data_split = ["D"];//Only set once
+                break;
+
+            case "15": //Turn breakpoints on/off
+                turn_off_breakpoints = !turn_off_breakpoints;
+                continue_breakpoint = false;
+                data_split = ["D"];//Only set once
+                break;
+
+            case "18": //Handle Variable Update
+                variable_update = { name: data_split[1], value: data_split[2], var_type: parseInt(data_split[3]) };
+                variable_transmitter();
+                data_split = ["D"];//Only set once
+                break;
             
-            case "3": //Set digitalWrite on a pin
-                pins.digitalWritePin(digital_pins[parseInt(data_split[1])], parseInt(data_split[2]));
-                data_split= ["D"];//Only set once
-            break;
-            
-            case "4": //Set specific led on
+            case "21": //Transmit external sensor names
+                sensor_update = "send names";
+                sensor_transmitter();
+                data_split = ["D"];//Only set once
+                break;
+
+            case "22": //Transmit external sensor data
+                sensor_update = data_split[1];
+                sensor_transmitter();
+                break;
+
+            case "31": //Set specific led on
                 led.plot(parseInt(data_split[1]), parseInt(data_split[2])); 
                 serial.writeString("{\"Message\":\" LED Plot was " + data_split[1] + data_split[2] + "\"}" + delim);
                 data_split= ["D"];//Only set once
             break;
             
-            case "5": //Set specific led off
+            case "32": //Set specific led off
                 led.unplot(parseInt(data_split[1]), parseInt(data_split[2]));
                 serial.writeString("{\"Message\":\" LED UnPlot was " + data_split[1] + data_split[2] + "\"}" + delim);
                 data_split= ["D"];//Only set once
             break;
 
-            case "6": //calibrate compass
+            case "41": //calibrate compass
                 input.calibrateCompass();
                 data_split = ["7"];
             break;
 
-            case "7": //get compass heading
+            case "42": //get compass heading
                 serial.writeLine("{\"Compass\":" + input.compassHeading() +"}" + delim);
                 delay = 125;
             break;
 
-            case "8": //get  magnetic field ratings along x,y,z & strength
+            case "43": //get  magnetic field ratings along x,y,z & strength
                 serial.writeLine("{\"Magnet\":{\"X\":" + input.magneticForce(Dimension.X) + ",\"Y\":" + input.magneticForce(Dimension.Y) +",\"Z\":" + input.magneticForce(Dimension.Z) +",\"Strength\":" + input.magneticForce(Dimension.Strength) +"}}" + delim);
                 delay = 125;
             break;
 
-            case "9": //set accel. range
+            case "44": //set accel. range
                 //Accell enums:
                 // AcceleratorRange.OneG - 1
                 // AcceleratorRange.TwoG - 2
@@ -327,17 +343,17 @@ namespace CircuitCheck {
                 data_split = ["9"];
             break;
 
-            case "10": //accelerometer data
+            case "45": //accelerometer data
                 serial.writeLine("{\"Motion\":{\"X\":" + input.acceleration(Dimension.X) + ",\"Y\":" + input.acceleration(Dimension.Y) +",\"Z\":" + input.acceleration(Dimension.Z) +",\"Strength\":" + input.acceleration(Dimension.Strength)+ "}}" + delim);
                 delay = 125;
             break;
 
-            case "11": //rotation data
+            case "46": //rotation data
                 serial.writeLine("{\"Rotation\":{\"Pitch\":" + input.rotation(Rotation.Pitch) + ",\"Roll\":" + input.rotation(Rotation.Roll) + "}}" + delim);
                 delay = 125;
             break;
 
-            case "12": //acceleremoter gesture -> TODO: update to directly access current gesture
+            case "47": //acceleremoter gesture -> TODO: update to directly access current gesture
             {   
                 let gesture = "None";
                 for(let k = 0; k < gestures.length; k++)//TODO: see if brute force option can be removed
@@ -353,28 +369,17 @@ namespace CircuitCheck {
             }
             break; 
 
-            case "13": //Temperature
+            case "51": //Light Level
+                serial.writeLine("{\"Light\":" + input.lightLevel() + "}" + delim);
+                delay = 125;
+                break;
+
+            case "52": //Temperature
                 serial.writeLine("{\"Temp\":" + input.temperature() + "}" + delim);
                 delay = 125;
             break;
-            
-            case "14": //Light Level
-                serial.writeLine("{\"Light\":" + input.lightLevel() + "}" + delim);
-                delay = 125;
-            break;
 
-            case "15": //Transmit external sensor names
-                sensor_update = "send names";
-                sensor_transmitter();
-                data_split= ["D"];//Only set once
-            break;
-
-            case "16": //Transmit external sensor data
-                sensor_update = data_split[1];
-                sensor_transmitter();
-            break;
-
-            case "18": //gatorMicrophone.getSoundIntensity() 
+            case "61": //gatorMicrophone.getSoundIntensity() 
                 serial.writeLine("{\"Sound\":" + gatorMicrophone.getSoundIntensity()+ "}" + delim);
                 if(hold)
                 {
@@ -384,19 +389,8 @@ namespace CircuitCheck {
                 {
                     delay = 0;
                 }
-            break;
-            //'RELEASE' : "21", 'HOLD': "22" }
-            case "21":
-                hold = false;
-                data_split= ["18"];//Only set once
-            break;
-
-            case "22":
-                hold = true;
-                data_split= ["18"];//Only set once
-            break;
-        }
-        
+            break;            
+        }    
     }
 
     function sendScreenshot(){
