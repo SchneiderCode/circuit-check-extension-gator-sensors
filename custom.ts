@@ -26,7 +26,7 @@ namespace CircuitCheck {
     let gestures = [Gesture.EightG, Gesture.FreeFall, Gesture.LogoDown, Gesture.LogoUp, Gesture.ScreenDown, Gesture.ScreenUp, Gesture.Shake, Gesture.SixG, Gesture.ThreeG, Gesture.TiltLeft, Gesture.TiltRight];
     let gesture_text = ["Eight G", "Free Fall", "Logo Down", "Logo Up", "Screen Down", "Screen Up", "Shake", "Six G", "Three G", "Tilt Left", "Tilt Right"];
     let data_split = ["0"];
-    let delay = 50;
+    let delay = 25;
     let continue_breakpoint = true;
     let variable_update = {name: "", value:"0", var_type: Type.Integer};
     let variable_transmitter = () => {};
