@@ -40,7 +40,7 @@ namespace CircuitCheck {
     /**
      * Pause the running program and connect with Circuit Check
      */
-    //% block="forever (CC)"
+    //% block="forever [CC]"
     //% weight=100
     export function runCircuitCheck(userCode: () => void) {
         basic.forever(function () {
@@ -56,6 +56,24 @@ namespace CircuitCheck {
             }while (hold);
             userCode();
         });
+    }
+
+    /**
+     * Add a delay, without interupting CircuitCheck
+     */
+    //% block="pause (ms) [CC]"
+    //% weight=90
+    export function pause(timePaused: number) {
+        let localTimer = input.runningTime();
+        variable_transmitter();//Send current state of variables
+        while(localTimer + timePaused < input.runningTime()){
+            if (timer + delay < input.runningTime()) {
+                sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
+                checkMessages("Circuit Check Running inside Pause");
+                // Update timer
+                timer = input.runningTime();
+            }
+        }
     }
 
     /**
