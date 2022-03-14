@@ -62,6 +62,7 @@ namespace CircuitCheck {
      * Add a delay, without interupting CircuitCheck
      */
     //% block="[CC] pause (ms) $timePaused"
+    //% timePaused.shadow="timePicker"
     //% weight=90
     export function pause(timePaused: number) {
         let localTimer = input.runningTime();
