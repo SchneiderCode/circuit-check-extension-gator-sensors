@@ -401,7 +401,7 @@ namespace CircuitCheck {
                 delay = 125;
             break;
 
-            case "61": //gatorMicrophone.getSoundIntensity() 
+            /*case "61": //gatorMicrophone.getSoundIntensity() 
                 serial.writeLine("{\"Sound\":" + gatorMicrophone.getSoundIntensity()+ "}" + delim);
                 if(hold)
                 {
@@ -411,7 +411,7 @@ namespace CircuitCheck {
                 {
                     delay = 0;
                 }
-            break;            
+            break;    */        
         }    
     }
 

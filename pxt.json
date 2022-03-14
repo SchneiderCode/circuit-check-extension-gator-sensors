@@ -4,8 +4,7 @@
     "dependencies": {
         "core": "*",
         "radio": "*",
-        "microphone": "*",
-        "gatorMicrophone": "github:sparkfun/pxt-gator-microphone#v1.0.20"
+        "microphone": "*"
     },
     "files": [
         "main.blocks",
