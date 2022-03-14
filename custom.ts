@@ -70,6 +70,8 @@ namespace CircuitCheck {
         let localTimer = control.millis() + timePaused;
         //variable_transmitter();//Send current state of variables
         while (localTimer < control.millis()){
+            serial.writeValue("timer", localTimer);
+            serial.writeValue("millis", control.millis());
             /*if (timer + delay < input.runningTime()) {
                 sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
                 checkMessages("Circuit Check Running inside Pause");
