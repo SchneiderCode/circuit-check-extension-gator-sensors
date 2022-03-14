@@ -40,9 +40,9 @@ namespace CircuitCheck {
     /**
      * Pause the running program and connect with Circuit Check
      */
-    //% block
+    //% block="forever (CC)"
     //% weight=100
-    export function runCircuitCheck() {
+    export function runCircuitCheck(userCode: () => void) {
         //serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
         variable_transmitter();//Send current state of variables
         do {
@@ -53,6 +53,7 @@ namespace CircuitCheck {
                 timer = input.runningTime();
             }
         }while (hold);
+        userCode();
     }
 
     /**
