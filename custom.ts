@@ -66,7 +66,7 @@ namespace CircuitCheck {
     //% weight=90
     export function pause(timePaused: number) {
         basic.showIcon(IconNames.Heart);
-        //basic.pause(timePaused);
+        basic.pause(timePaused);
         /*let localTimer = input.runningTime();
         variable_transmitter();//Send current state of variables
         while((localTimer + timePaused) < input.runningTime()){
