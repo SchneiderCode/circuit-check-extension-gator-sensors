@@ -40,7 +40,7 @@ namespace CircuitCheck {
     /**
      * Pause the running program and connect with Circuit Check
      */
-    //% block="forever [CC]"
+    //% block="[CC] forever "
     //% weight=100
     export function runCircuitCheck(userCode: () => void) {
         basic.forever(function () {
@@ -61,7 +61,7 @@ namespace CircuitCheck {
     /**
      * Add a delay, without interupting CircuitCheck
      */
-    //% block="pause (ms) [CC]"
+    //% block="[CC] pause (ms) $timePaused"
     //% weight=90
     export function pause(timePaused: number) {
         let localTimer = input.runningTime();
