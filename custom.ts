@@ -43,17 +43,19 @@ namespace CircuitCheck {
     //% block="forever (CC)"
     //% weight=100
     export function runCircuitCheck(userCode: () => void) {
-        //serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
-        variable_transmitter();//Send current state of variables
-        do {
-            if (timer + delay < input.runningTime()) {
-                sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
-                checkMessages("Circuit Check Running");
-                // Update timer
-                timer = input.runningTime();
-            }
-        }while (hold);
-        userCode();
+        basic.forever(function () {
+            //serial.writeLine("{\"Share_URL\": \"" + url + "\"}" + delim);
+            variable_transmitter();//Send current state of variables
+            do {
+                if (timer + delay < input.runningTime()) {
+                    sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
+                    checkMessages("Circuit Check Running");
+                    // Update timer
+                    timer = input.runningTime();
+                }
+            }while (hold);
+            userCode();
+        });
     }
 
     /**
