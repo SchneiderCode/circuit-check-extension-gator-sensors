@@ -66,18 +66,18 @@ namespace CircuitCheck {
     //% weight=90
     export function pause(timePaused: number) {
         basic.showIcon(IconNames.Heart);
-        basic.pause(timePaused);
-        /*let localTimer = input.runningTime();
-        variable_transmitter();//Send current state of variables
-        while((localTimer + timePaused) < input.runningTime()){
-            if (timer + delay < input.runningTime()) {
+        //basic.pause(timePaused);
+        let localTimer = input.runningTime() + timePaused;
+        //variable_transmitter();//Send current state of variables
+        while(localTimer < input.runningTime()){
+            /*if (timer + delay < input.runningTime()) {
                 sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
                 checkMessages("Circuit Check Running inside Pause");
                 // Update timer
                 timer = input.runningTime();
-            }
+            }*/
 
-        }*/
+        }
     }
 
     /**
