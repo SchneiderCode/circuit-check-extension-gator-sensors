@@ -1,29 +1,15 @@
-# Adding a sensor to Circuit Check
-In this tutorial you will learn to add an external sensor to Circuit Check
+# Programming Your Fitness Banner  
+### @explicitHints true
 
-## Prepare Sensor Block
-
-```blocks
-CircuitCheck.prepareSensors(function () {
-	
-})
+```package
+CircuitCheck=github:SchneiderCode/circuit-check-extension  
 ```
 
-## Display Sensor Block
-```blocks
-CircuitCheck.prepareSensors(function () {
-    CircuitCheck.transmitSensorData_Basic("", 0)
-})
-``` 
+## Setup  
+To start you should only have one block in your program, the cc forever block:
 
-## Place Sensor Block
-
-```blocks
-CircuitCheck.prepareSensors(function () {
-    CircuitCheck.transmitSensorData_Basic("Ultrasonic", sonar.ping(
-    DigitalPin.P0,
-    DigitalPin.P1,
-    PingUnit.MicroSeconds
-    ))
+```block
+CircuitCheck.runCircuitCheck(function () {
+	
 })
 ```
