@@ -1,7 +1,7 @@
-# Programming Your Fitness Banner’s LEDs 
+# Programming Your Fitness Banners LEDs 
  
 ```package
-CircuitCheck=github:SchneiderCode/circuit-check-extension 
+CircuitCheck=github:schneidercode/circuit-check-extension 
 ```
  
 ## Setup 
