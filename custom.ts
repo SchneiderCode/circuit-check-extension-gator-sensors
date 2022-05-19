@@ -19,13 +19,14 @@ namespace CircuitCheck {
 
     let timer = 0;
     let data_raw = "";
+    let data_split = ["D"];
+    let last_sensor = ["D"];//Tracks last sensor, allowing for CC to resume data collection when reconnecting or resuming code. 
     //let in_or_out = [[0, 0], [0, 0], [0, 0]];//deprecated with removal of case 0 (live view)
     let digital_pins = [DigitalPin.P0, DigitalPin.P1, DigitalPin.P2, DigitalPin.P3, DigitalPin.P4, DigitalPin.P5, DigitalPin.P6, DigitalPin.P7, DigitalPin.P8, DigitalPin.P9, DigitalPin.P10, DigitalPin.P11, DigitalPin.P12, DigitalPin.P13, DigitalPin.P14, DigitalPin.P15, DigitalPin.P16, DigitalPin.P0, DigitalPin.P0, DigitalPin.P19, DigitalPin.P20];
     let analog_pins = [AnalogPin.P0, AnalogPin.P1, AnalogPin.P2];
     let delim = "&";
     let gestures = [Gesture.EightG, Gesture.FreeFall, Gesture.LogoDown, Gesture.LogoUp, Gesture.ScreenDown, Gesture.ScreenUp, Gesture.Shake, Gesture.SixG, Gesture.ThreeG, Gesture.TiltLeft, Gesture.TiltRight];
     let gesture_text = ["Eight G", "Free Fall", "Logo Down", "Logo Up", "Screen Down", "Screen Up", "Shake", "Six G", "Three G", "Tilt Left", "Tilt Right"];
-    let data_split = ["0"];
     let delay = 25;
     let continue_breakpoint = true;
     let variable_update = {name: "", value:"0", var_type: Type.Integer};
@@ -207,6 +208,7 @@ namespace CircuitCheck {
         data_raw = serial.readString()
         if (data_raw.trim() != "") {
             //Hold previous value, for hold/release we need to return to the last sensor command
+            last_sensor = data_split;//Hold last sensor selection
             data_split = data_raw.split(",");
             data_split[data_split.length - 1] = data_split[data_split.length - 1].substr(0, data_split[data_split.length - 1].length - 1);//remove last | from data value
             serial.writeString("{\"Message\":\" Raw data was " + data_raw + " selection was " + data_split[0] + " and Data was : ")
@@ -223,7 +225,7 @@ namespace CircuitCheck {
                 variable_transmitter();//Send current state of variables
                 sensor_update = "send names";
                 sensor_transmitter();
-                data_split=["D"];
+                data_split=last_sensor;
             break;
 
             /*case "0": //Read out Digital/Analog pin values 
