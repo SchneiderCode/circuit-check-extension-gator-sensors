@@ -68,6 +68,7 @@ namespace CircuitCheck {
     export function pause(timePaused: number) {
         let localTimer = control.millis() + timePaused;
         variable_transmitter();//Send current state of variables
+        sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
         while (localTimer > control.millis()){
             if (timer + delay < input.runningTime()) {
                 sendScreenshot();//Send current state of LED matrix, so that CC can mirror it
