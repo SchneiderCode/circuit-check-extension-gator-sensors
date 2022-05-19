@@ -294,35 +294,35 @@ namespace CircuitCheck {
 
             case "11": //Hold in run()
                 hold = true;
-                data_split = ["D"];//Only set once
+                data_split = last_sensor;//Only set once
                 break;
 
             case "12": //Release from run()
                 hold = false;
-                data_split = ["D"];//Only set once
+                data_split = last_sensor;//Only set once
                 break;
 
             case "13": //Step to the next breakpoint
                 continue_breakpoint = false;
-                data_split = ["D"];//Only set once
+                data_split = last_sensor;//Only set once
                 break;
 
             case "15": //Turn breakpoints on/off
                 turn_off_breakpoints = !turn_off_breakpoints;
                 continue_breakpoint = false;
-                data_split = ["D"];//Only set once
+                data_split = last_sensor;//Only set once
                 break;
 
             case "18": //Handle Variable Update
                 variable_update = { name: data_split[1], value: data_split[2], var_type: parseInt(data_split[3]) };
                 variable_transmitter();
-                data_split = ["D"];//Only set once
+                data_split = last_sensor;//Only set once
                 break;
             
             case "21": //Transmit external sensor names
                 sensor_update = "send names";
                 sensor_transmitter();
-                data_split = ["D"];//Only set once
+                data_split = last_sensor;//Only set once
                 break;
 
             case "22": //Transmit external sensor data
