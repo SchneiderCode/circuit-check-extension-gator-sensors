@@ -1,5 +1,5 @@
 
-> Open this page at [https://schneidercode.github.io/circuit-check-extension/](https://schneidercode.github.io/circuit-check-extension-gator-sensors/)
+> Open this page at [https://schneidercode.github.io/circuit-check-extension-gator-sensors/](https://schneidercode.github.io/circuit-check-extension-gator-sensors/)
 
 ## Use as Extension
 
