@@ -5,7 +5,9 @@
         "core": "*",
         "radio": "*",
         "microphone": "*",
-        "gatorEnvironment": "github:sparkfun/pxt-gator-environment#v1.0.16"
+        "gatorEnvironment": "github:sparkfun/pxt-gator-environment#v1.0.16",
+        "gatorMicrophone": "github:sparkfun/pxt-gator-microphone#v1.0.21",
+        "gatorSoil": "github:sparkfun/pxt-gator-soil#v1.0.3"
     },
     "files": [
         "main.blocks",
