@@ -424,16 +424,15 @@ namespace CircuitCheck {
                 delay = 125;
                 break;
 
-            case "57": //Soil - Hardcoded to match wiring guidelines
+            case "58": //Soil - Hardcoded to match wiring guidelines
                 serial.writeLine("{\"Soil\":" +gatorSoil.moisture(AnalogPin.P2, GatorSoilType.Moisture, DigitalPin.P1) + "}" + delim);
                 delay = 125;
                 break;
 
             case "61": 
                 serial.writeLine("{\"Sound\":" + gatorMicrophone.getSoundIntensity()+ "}" + delim);
-                  delay = 125;  
-                
-            break;    
+                delay = 125;  
+                break;    
         }    
     }
 
