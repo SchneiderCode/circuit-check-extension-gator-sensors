@@ -400,9 +400,29 @@ namespace CircuitCheck {
                 break;
 
             case "52": //Temperature
-                serial.writeLine("{\"Temp\":" + input.temperature() + "}" + delim);
-                delay = 125;
+                serial.writeLine("{\"Temp\":" + gatorEnvironment.getMeasurement(measurementType.degreesC) + "}" + delim);
+                delay = 125; 
             break;
+
+            case "53": //Humidity
+                serial.writeLine("{\"Humidity\":" + gatorEnvironment.getMeasurement(measurementType.humidity) + "}" + delim);
+                delay = 125;
+                break;
+
+            case "54": //Pressure
+                serial.writeLine("{\"Pressure\":" + gatorEnvironment.getMeasurement(measurementType.pressure) + "}" + delim);
+                delay = 125;
+                break;
+            
+            case "56": //eCO2
+                serial.writeLine("{\"eCO2\":" + gatorEnvironment.getMeasurement(measurementType.eCO2) + "}" + delim);
+                delay = 125;
+                break;
+
+            case "57": //TVOC
+                serial.writeLine("{\"TVOC\":" + gatorEnvironment.getMeasurement(measurementType.TVOC) + "}" + delim);
+                delay = 125;
+                break;
 
             /*case "61": //gatorMicrophone.getSoundIntensity() 
                 serial.writeLine("{\"Sound\":" + gatorMicrophone.getSoundIntensity()+ "}" + delim);
